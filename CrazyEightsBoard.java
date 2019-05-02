@@ -1,3 +1,5 @@
+ 
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -9,7 +11,8 @@ public class CrazyEightsBoard extends Board {
     /**
      * The size (number of cards) on the board.
      */
-    private static final int BOARD_SIZE = 11;
+    private int size;
+    private int playHand;
 
     /**
      * The ranks of the cards for this game to be sent to the deck.
@@ -40,8 +43,8 @@ public class CrazyEightsBoard extends Board {
     /**
      * Creates a new <code>CrazyEightsBoard</code> instance.
      */
-     public CrazyEightsBoard() {
-        super(BOARD_SIZE, 5, 5, RANKS, SUITS, POINT_VALUES);
+     public CrazyEightsBoard(int size, int playHand) {
+        super(size, playHand, 5, RANKS, SUITS, POINT_VALUES);
      }
 
     /**

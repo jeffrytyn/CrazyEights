@@ -1,3 +1,5 @@
+ 
+
 /**
  * This is a class that plays the GUI version of the Crazy Eights game.
  * See accompanying documents for a description of how Crazy Eights is played.
@@ -9,7 +11,7 @@ public class CrazyEightsRunner {
 	 * @param args is not used.
 	 */
 	public static void main(String[] args) {
-		Board board = new CrazyEightsBoard();
+		Board board = new CrazyEightsBoard(11, 5);
 		CardGameGUI gui = new CardGameGUI(board);
 		board.acknowledgeGUI(gui);
 		gui.displayGame();

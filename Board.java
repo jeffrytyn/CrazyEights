@@ -1,3 +1,6 @@
+ 
+
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -98,8 +101,6 @@ public abstract class Board {
             tempCards[k] = deck.deal();
         }
         cards = tempCards;
-        cgGUI.redisplay(this);
-        System.out.println("Skidaddle");
     }
 
     public void acknowledgeGUI (CardGameGUI gui) {
@@ -140,7 +141,9 @@ public abstract class Board {
     public int deckSize() {
         return deck.size();
     }
-
+    public void setDeckSize(int size){
+        deck.setSize(size);
+    }
     /**
      * Accesses a card on the board.
      * @return the card at position k on the board.

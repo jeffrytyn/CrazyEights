@@ -1,3 +1,5 @@
+ 
+
 import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Dimension;
@@ -159,6 +161,8 @@ public class CardGameGUI extends JFrame implements ActionListener {
 
         selections = new boolean[board.size()];
         initDisplay();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        repaint();
     }
     
     /**
@@ -372,6 +376,8 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(drawButton)) {
             board.drawPlayerCard();
+            board.setDeckSize(board.deckSize() + 1);
+            redisplay(board);
         } else {
             signalError();
             return;
