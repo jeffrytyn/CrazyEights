@@ -132,37 +132,66 @@ public class CardGameGUI extends JFrame implements ActionListener {
     }
 
     public void redisplay (Board gameBoard) {
-        CompHand = gameBoard.GetCompHand();
-        PlayerHand = gameBoard.GetPlayerHand();
-        board = gameBoard;
-        // Initialize cardCoords using 5 cards per row
-        cardCoords = new Point[board.size()];
-        int x = LAYOUT_LEFT;
-        int y = LAYOUT_TOP;
-        for (int i = 0  ; i < cardCoords.length; i++) {
-            cardCoords[i] = new Point(x, y);
-            if (i < CompHand) {
-                x += LAYOUT_WIDTH_INC;
-                y = LAYOUT_TOP;
-                System.out.println("CompHand: x = " + x + ", y = " + y);
-                if (i == CompHand - 1) {
+        
+        statusMsg.setText(board.deckSize()
+            + " undealt cards remain.");
+            boolean[] selection2 = new boolean[board.size()];
+            cardCoords = new Point[board.size()];
+            int x = LAYOUT_LEFT;
+            int y = LAYOUT_TOP;
+            for (int i = 0  ; i < cardCoords.length; i++) {
+                cardCoords[i] = new Point(x, y);
+                if (i < CompHand) {
+                    x += LAYOUT_WIDTH_INC;
+                    y = LAYOUT_TOP;
+                    System.out.println("CompHand: x = " + x + ", y = " + y);
+                    if (i == CompHand - 1) {
+                        x = LAYOUT_LEFT;
+                        y += LAYOUT_HEIGHT_INC;
+                    }
+                } else if (i < CompHand + 1) {
                     x = LAYOUT_LEFT;
                     y += LAYOUT_HEIGHT_INC;
+                    System.out.println("Deck: x = " + x + ", y = " + y);
+                } else {
+                    x += LAYOUT_WIDTH_INC;
+                    System.out.println("PlayerHand: x = " + x + ", y = " + y);
                 }
-            } else if (i < CompHand + 1) {
-                x = LAYOUT_LEFT;
-                y += LAYOUT_HEIGHT_INC;
-                System.out.println("Deck: x = " + x + ", y = " + y);
-            } else {
-                x += LAYOUT_WIDTH_INC;
-                System.out.println("PlayerHand: x = " + x + ", y = " + y);
             }
-        }
-
-        selections = new boolean[board.size()];
-        initDisplay();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        repaint();
+            for(int i = 0; i < selection2.length; i++){
+                if (i < selection2.length - 1){
+                    selection2[i] = selections[i];
+                }else{
+                    selection2[i] = false;
+                }
+            }
+            selections = selection2.clone();
+            displayCards = new JLabel[board.size()];
+            for (int k = 0; k < board.size(); k++) {
+                displayCards[k] = new JLabel();
+                panel.add(displayCards[k]);
+                displayCards[k].setBounds(cardCoords[k].x, cardCoords[k].y,
+                                            CARD_WIDTH, CARD_HEIGHT);
+                displayCards[k].addMouseListener(new MyMouseListener());
+                selections[k] = false;
+            }
+            pack();
+        getContentPane().add(panel);
+        getRootPane().setDefaultButton(replaceButton);
+        panel.setVisible(true);
+            for (int k = 0; k < board.size(); k++) {
+                String cardImageFileName =
+                    imageFileName(board.cardAt(k), selections[k]);
+                URL imageURL = getClass().getResource(cardImageFileName);
+                if (imageURL != null) {
+                    ImageIcon icon = new ImageIcon(imageURL);
+                    displayCards[k].setIcon(icon);
+                    displayCards[k].setVisible(true);
+                } else {
+                    throw new RuntimeException(
+                        "Card image not found: \"" + cardImageFileName + "\"");
+                }
+            }
     }
     
     /**
@@ -362,6 +391,11 @@ public class CardGameGUI extends JFrame implements ActionListener {
             }
             repaint();
         } else if (e.getSource().equals(restartButton)) {
+            board.setSize(11);
+            selections = new boolean[board.size()];
+            for(int i = 0; i < selections.length; i++){
+                selections[i] = false;
+            }
             board.newGame();
             getRootPane().setDefaultButton(replaceButton);
             winMsg.setVisible(false);
@@ -370,14 +404,10 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 signalLoss();
                 lossMsg.setVisible(true);
             }
-            for (int i = 0; i < selections.length; i++) {
-                selections[i] = false;
-            }
             repaint();
         } else if (e.getSource().equals(drawButton)) {
             board.drawPlayerCard();
-            board.setDeckSize(board.deckSize() + 1);
-            redisplay(board);
+                        redisplay(board);
         } else {
             signalError();
             return;
@@ -418,6 +448,7 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 if (e.getSource().equals(displayCards[k])
                         && board.cardAt(k) != null
                         && k > 5) {
+                    System.out.println(k);
                     selections[k] = !selections[k];
                     repaint();
                     return;

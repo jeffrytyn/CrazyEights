@@ -89,7 +89,6 @@ public abstract class Board {
     public void drawPlayerCard() {
         setSize(size()+1);
         SetPlayerHand(GetPlayerHand() + 1);
-        
     }
     
     public void setSize(int i) {
@@ -97,10 +96,11 @@ public abstract class Board {
         for (int k = 0; k < i; k++) {
             if (k < cards.length) {
                 tempCards[k] = cards[k];
-            }
+            }else{
             tempCards[k] = deck.deal();
+           }
         }
-        cards = tempCards;
+        cards = tempCards.clone();
     }
 
     public void acknowledgeGUI (CardGameGUI gui) {
@@ -141,9 +141,7 @@ public abstract class Board {
     public int deckSize() {
         return deck.size();
     }
-    public void setDeckSize(int size){
-        deck.setSize(size);
-    }
+
     /**
      * Accesses a card on the board.
      * @return the card at position k on the board.

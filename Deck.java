@@ -57,7 +57,7 @@ public class Deck {
         return size;
     }
     
-    public void setSize(int size){
+    public void setDeckSize(int size){
        this.size = size;
     }
 
