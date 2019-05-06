@@ -132,8 +132,9 @@ public class CardGameGUI extends JFrame implements ActionListener {
     }
 
     public void redisplay (Board gameBoard) {
-        
-        statusMsg.setText(board.deckSize()
+            System.out.println(board.size());
+            System.out.println(board.GetPlayerHand());
+            statusMsg.setText(board.deckSize()
             + " undealt cards remain.");
             boolean[] selection2 = new boolean[board.size()];
             cardCoords = new Point[board.size()];
@@ -166,6 +167,12 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 }
             }
             selections = selection2.clone();
+            System.out.println(selections.length);
+            
+            for(int i = 0; i < selections.length; i++){
+                System.out.println(selections[i]);
+            }
+            
             displayCards = new JLabel[board.size()];
             for (int k = 0; k < board.size(); k++) {
                 displayCards[k] = new JLabel();
@@ -176,9 +183,9 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 selections[k] = false;
             }
             pack();
-        getContentPane().add(panel);
-        getRootPane().setDefaultButton(replaceButton);
-        panel.setVisible(true);
+            getContentPane().add(panel);
+            getRootPane().setDefaultButton(replaceButton);
+            panel.setVisible(true);
             for (int k = 0; k < board.size(); k++) {
                 String cardImageFileName =
                     imageFileName(board.cardAt(k), selections[k]);
@@ -407,7 +414,7 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(drawButton)) {
             board.drawPlayerCard();
-                        redisplay(board);
+            redisplay(board);
         } else {
             signalError();
             return;
