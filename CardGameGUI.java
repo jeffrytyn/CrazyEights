@@ -27,7 +27,7 @@ public class CardGameGUI extends JFrame implements ActionListener {
     /** Height of the game frame. */
     private static final int DEFAULT_HEIGHT = 302;
     /** Width of the game frame. */
-    private static final int DEFAULT_WIDTH = 1200;
+    private static final int DEFAULT_WIDTH = 1900;
     /** Width of a card. */
     private static final int CARD_WIDTH = 73;
     /** Height of a card. */
@@ -373,12 +373,20 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(restartButton)) {
             board.setSize(11);
-            int size = selections.size();
-            for(int i = 0; i < size; i++){
+            board.SetPlayerHand(5);
+            while(selections.size() > 11){
+                selections.remove(selections.size()-1);
+            }
+            for(int i = 0; i < selections.size(); i++){
                 selections.set(i, false);
-                if (selections.get(11) != null){
-                    selections.remove(11);
-                }
+            }
+            while(cardCoords.size() > 11){
+                cardCoords.remove(cardCoords.size()-1);
+            }
+            while(displayCards.size() > 11){
+                panel.remove(displayCards.get(displayCards.size()-1));
+                x -= LAYOUT_WIDTH_INC;
+                displayCards.remove(displayCards.size()-1);
             }
             board.newGame();
             getRootPane().setDefaultButton(replaceButton);
@@ -391,8 +399,8 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(drawButton)) {
             board.drawPlayerCard();
-           
             cardCoords.add(new Point(x, y));
+            x += LAYOUT_WIDTH_INC;
             displayCards.add(new JLabel());
             panel.add(displayCards.get(displayCards.size()-1));
             displayCards.get(displayCards.size()-1).setBounds(cardCoords.get(cardCoords.size()-1).x, 
