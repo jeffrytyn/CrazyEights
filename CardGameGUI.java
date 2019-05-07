@@ -72,16 +72,16 @@ public class CardGameGUI extends JFrame implements ActionListener {
     /** The "you've won n out of m games" message. */
     private JLabel totalsMsg;
     /** The card displays. */
-    private JLabel[] displayCards;
+    private ArrayList <JLabel> displayCards;
     /** The win message. */
     private JLabel winMsg;
     /** The loss message. */
     private JLabel lossMsg;
     /** The coordinates of the card displays. */
-    private Point[] cardCoords;
+    private ArrayList<Point> cardCoords;
 
     /** kth element is true iff the user has selected card #k. */
-    private boolean[] selections;
+    private ArrayList<Boolean> selections;
     /** The number of games won. */
     private int totalWins;
     /** The number of games played. */
@@ -89,7 +89,8 @@ public class CardGameGUI extends JFrame implements ActionListener {
 
     public int CompHand;
     public int PlayerHand;
-
+    private int x;
+    private int y;
     /**
      * Initialize the GUI.
      * @param gameBoard is a <code>Board</code> subclass.
@@ -102,11 +103,11 @@ public class CardGameGUI extends JFrame implements ActionListener {
         totalGames = 0;
 
         // Initialize cardCoords using 5 cards per row
-        cardCoords = new Point[board.size()];
-        int x = LAYOUT_LEFT;
-        int y = LAYOUT_TOP;
-        for (int i = 0  ; i < cardCoords.length; i++) {
-            cardCoords[i] = new Point(x, y);
+        cardCoords = new ArrayList<Point>();
+        x = LAYOUT_LEFT;
+        y = LAYOUT_TOP;
+        for (int i = 0  ; i < board.size(); i++) {
+            cardCoords.add(new Point(x, y));
             if (i < CompHand) {
                 x += LAYOUT_WIDTH_INC;
                 y = LAYOUT_TOP;
@@ -125,18 +126,14 @@ public class CardGameGUI extends JFrame implements ActionListener {
             }
         }
 
-        selections = new boolean[board.size()];
+        selections = new ArrayList<Boolean>();
         initDisplay();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         repaint();
     }
 
-    public void redisplay (Board gameBoard) {
-            System.out.println(board.size());
-            System.out.println(board.GetPlayerHand());
-            statusMsg.setText(board.deckSize()
-            + " undealt cards remain.");
-            boolean[] selection2 = new boolean[board.size()];
+    /*public void redisplay () {
+            selections = new boolean[board.size()];
             cardCoords = new Point[board.size()];
             int x = LAYOUT_LEFT;
             int y = LAYOUT_TOP;
@@ -159,19 +156,6 @@ public class CardGameGUI extends JFrame implements ActionListener {
                     System.out.println("PlayerHand: x = " + x + ", y = " + y);
                 }
             }
-            for(int i = 0; i < selection2.length; i++){
-                if (i < selection2.length - 1){
-                    selection2[i] = selections[i];
-                }else{
-                    selection2[i] = false;
-                }
-            }
-            selections = selection2.clone();
-            System.out.println(selections.length);
-            
-            for(int i = 0; i < selections.length; i++){
-                System.out.println(selections[i]);
-            }
             
             displayCards = new JLabel[board.size()];
             for (int k = 0; k < board.size(); k++) {
@@ -182,24 +166,14 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 displayCards[k].addMouseListener(new MyMouseListener());
                 selections[k] = false;
             }
-            pack();
+                    pack();
             getContentPane().add(panel);
             getRootPane().setDefaultButton(replaceButton);
             panel.setVisible(true);
-            for (int k = 0; k < board.size(); k++) {
-                String cardImageFileName =
-                    imageFileName(board.cardAt(k), selections[k]);
-                URL imageURL = getClass().getResource(cardImageFileName);
-                if (imageURL != null) {
-                    ImageIcon icon = new ImageIcon(imageURL);
-                    displayCards[k].setIcon(icon);
-                    displayCards[k].setVisible(true);
-                } else {
-                    throw new RuntimeException(
-                        "Card image not found: \"" + cardImageFileName + "\"");
-                }
-            }
-    }
+
+
+            repaint();
+    }*/
     
     /**
      * Run the game.
@@ -218,12 +192,12 @@ public class CardGameGUI extends JFrame implements ActionListener {
     public void repaint() {
         for (int k = 0; k < board.size(); k++) {
             String cardImageFileName =
-                imageFileName(board.cardAt(k), selections[k]);
+                imageFileName(board.cardAt(k), selections.get(k));
             URL imageURL = getClass().getResource(cardImageFileName);
             if (imageURL != null) {
                 ImageIcon icon = new ImageIcon(imageURL);
-                displayCards[k].setIcon(icon);
-                displayCards[k].setVisible(true);
+                displayCards.get(k).setIcon(icon);
+                displayCards.get(k).setVisible(true);
             } else {
                 throw new RuntimeException(
                     "Card image not found: \"" + cardImageFileName + "\"");
@@ -271,14 +245,14 @@ public class CardGameGUI extends JFrame implements ActionListener {
         panel.setLayout(null);
         panel.setPreferredSize(
             new Dimension(DEFAULT_WIDTH - 20, height - 20));
-        displayCards = new JLabel[board.size()];
+        displayCards = new ArrayList<JLabel>();
         for (int k = 0; k < board.size(); k++) {
-            displayCards[k] = new JLabel();
-            panel.add(displayCards[k]);
-            displayCards[k].setBounds(cardCoords[k].x, cardCoords[k].y,
+            displayCards.add(new JLabel());
+            panel.add(displayCards.get(k));
+            displayCards.get(k).setBounds(cardCoords.get(k).x, cardCoords.get(k).y,
                                         CARD_WIDTH, CARD_HEIGHT);
-            displayCards[k].addMouseListener(new MyMouseListener());
-            selections[k] = false;
+            displayCards.get(k).addMouseListener(new MyMouseListener());
+            selections.add(false);
         }
         replaceButton = new JButton();
         replaceButton.setText("Play Card");
@@ -377,7 +351,7 @@ public class CardGameGUI extends JFrame implements ActionListener {
             // Gather all the selected cards.
             List<Integer> selection = new ArrayList<Integer>();
             for (int k = 0; k < board.size(); k++) {
-                if (selections[k]) {
+                if (selections.get(k)) {
                     selection.add(new Integer(k));
                 }
             }
@@ -387,7 +361,7 @@ public class CardGameGUI extends JFrame implements ActionListener {
                 return;
             }
             for (int k = 0; k < board.size(); k++) {
-                selections[k] = false;
+                selections.set(k, false);
             }
             // Do the replace.
             board.replaceSelectedCards(selection);
@@ -399,9 +373,12 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(restartButton)) {
             board.setSize(11);
-            selections = new boolean[board.size()];
-            for(int i = 0; i < selections.length; i++){
-                selections[i] = false;
+            int size = selections.size();
+            for(int i = 0; i < size; i++){
+                selections.set(i, false);
+                if (selections.get(11) != null){
+                    selections.remove(11);
+                }
             }
             board.newGame();
             getRootPane().setDefaultButton(replaceButton);
@@ -414,7 +391,16 @@ public class CardGameGUI extends JFrame implements ActionListener {
             repaint();
         } else if (e.getSource().equals(drawButton)) {
             board.drawPlayerCard();
-            redisplay(board);
+           
+            cardCoords.add(new Point(x, y));
+            displayCards.add(new JLabel());
+            panel.add(displayCards.get(displayCards.size()-1));
+            displayCards.get(displayCards.size()-1).setBounds(cardCoords.get(cardCoords.size()-1).x, 
+                                        cardCoords.get(cardCoords.size()-1).y,
+                                        CARD_WIDTH, CARD_HEIGHT);
+            displayCards.get(displayCards.size()-1).addMouseListener(new MyMouseListener());
+            selections.add(false); 
+            repaint();
         } else {
             signalError();
             return;
@@ -451,12 +437,11 @@ public class CardGameGUI extends JFrame implements ActionListener {
          * @param e the mouse event.
          */
         public void mouseClicked(MouseEvent e) {
-            for (int k = 0; k < board.size(); k++) {
-                if (e.getSource().equals(displayCards[k])
-                        && board.cardAt(k) != null
-                        && k > 5) {
-                    System.out.println(k);
-                    selections[k] = !selections[k];
+            for (int k = 0; k < displayCards.size(); k++) {
+                if (e.getSource().equals(displayCards.get(k))
+                && board.cardAt(k) != null
+                && k > 5){
+                    selections.set(k, !selections.get(k));
                     repaint();
                     return;
                 }
